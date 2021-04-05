@@ -33,9 +33,10 @@ const TabItemCenter = styled.TouchableOpacity`
 `;
 
 const AvatarIcon = styled.Image`
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
+  width: 26px;
+  height: 26px;
+  border-width: 1px;
+  border-radius: 13px;
 `;
 
 export default ({state, navigation}) => {
@@ -55,6 +56,7 @@ export default ({state, navigation}) => {
           fill="#fff"
         />
       </TabItem>
+
       <TabItem onPress={() => goTo('Search')}>
         <SearchIcon
           style={{opacity: state.index === 1 ? 1 : 0.5}}
@@ -63,9 +65,11 @@ export default ({state, navigation}) => {
           fill="#fff"
         />
       </TabItem>
+
       <TabItemCenter onPress={() => goTo('Appointments')}>
         <TodayIcon width="32" height="32" fill="#4eadbe" />
       </TabItemCenter>
+
       <TabItem onPress={() => goTo('Favorites')}>
         <FavoriteIcon
           style={{opacity: state.index === 3 ? 1 : 0.5}}
@@ -74,9 +78,18 @@ export default ({state, navigation}) => {
           fill="#fff"
         />
       </TabItem>
+
       <TabItem onPress={() => goTo('Profile')}>
-        {user.avatar != '' ? (
-          <AvatarIcon source={{uri: user.avatar}} />
+        {user.avatar ? (
+          <AvatarIcon
+            source={{uri: user.avatar}}
+            style={{
+              borderColor:
+                state.index === 4
+                  ? 'rgba(255, 255, 255, 1)'
+                  : 'rgba(255, 255, 255, 0.5)',
+            }}
+          />
         ) : (
           <AccountIcon
             style={{opacity: state.index === 4 ? 1 : 0.5}}

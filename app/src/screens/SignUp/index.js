@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
+import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -14,9 +15,9 @@ import {
   SignMessageButtonTextBold,
 } from './styles';
 
-import SignInput from '../../components/SignInput';
-
 import Api from '../../Api';
+
+import SignInput from '../../components/SignInput';
 
 import BarberLogo from '../../assets/barber.svg';
 import PersonIcon from '../../assets/person.svg';
@@ -25,66 +26,90 @@ import LockIcon from '../../assets/lock.svg';
 
 export default () => {
   const {dispatch: userDispatch} = useContext(UserContext);
+
   const navigation = useNavigation();
 
-  const [nameField, setNameFiled] = useState('');
-  const [emailField, setEmailFiled] = useState('');
-  const [passwordField, setPasswordFiled] = useState('');
+  const [nameField, setNameField] = useState('');
+  const [emailField, setEmailField] = useState('');
+  const [passwordField, setPasswordField] = useState('');
+  const [passwordConfirmationField, setPasswordConfirmationField] = useState(
+    '',
+  );
 
   const handleSignClick = async () => {
-    if (nameField != '' && emailField != '' && passwordField != '') {
-      let res = await Api.signUp(nameField, emailField, passwordField);
-      if (res.token) {
-        await AsyncStorage.setItem('token', res.token);
+    if (nameField && emailField && passwordField && passwordConfirmationField) {
+      let json = await Api.signUp(
+        nameField,
+        emailField,
+        passwordField,
+        passwordConfirmationField,
+      );
+
+      if (json.token) {
+        await AsyncStorage.setItem('token', json.token);
 
         userDispatch({
           type: 'setAvatar',
           payload: {
-            avatar: res.data.avatar,
+            avatar: json.data.avatar,
           },
         });
 
         navigation.reset({
-          routes: [{name: 'MainTab'}],
+          routes: [
+            {
+              name: 'MainTab',
+            },
+          ],
         });
       } else {
-        alert('Erro: ' + res.error);
+        alert(JSON.stringify(json.error));
       }
     } else {
-      alert('Preencha os campos');
     }
   };
 
   const handleMessageButtonClick = () => {
     navigation.reset({
-      routes: [{name: 'SignIn'}],
+      routes: [
+        {
+          name: 'SignIn',
+        },
+      ],
     });
   };
 
   return (
     <Container>
+      <StatusBar backgroundColor="#63c2d1" barStyle="dark-content" />
+
       <BarberLogo width="100%" height="160" />
 
       <InputArea>
         <SignInput
           IconSvg={PersonIcon}
-          placeholder="Digite seu nome"
+          placeholder="Nome"
           value={nameField}
-          onChangeText={(t) => setNameFiled(t)}
+          onChangeText={(t) => setNameField(t)}
         />
-
         <SignInput
           IconSvg={EmailIcon}
-          placeholder="Digite seu e-mail"
+          placeholder="E-mail"
           value={emailField}
-          onChangeText={(t) => setEmailFiled(t)}
+          onChangeText={(t) => setEmailField(t)}
         />
-
         <SignInput
           IconSvg={LockIcon}
-          placeholder="Digite sua senha"
+          placeholder="Senha"
           value={passwordField}
-          onChangeText={(t) => setPasswordFiled(t)}
+          onChangeText={(t) => setPasswordField(t)}
+          password={true}
+        />
+        <SignInput
+          IconSvg={LockIcon}
+          placeholder="Confirme a senha"
+          value={passwordConfirmationField}
+          onChangeText={(t) => setPasswordConfirmationField(t)}
           password={true}
         />
 
@@ -95,7 +120,7 @@ export default () => {
 
       <SignMessageButton onPress={handleMessageButtonClick}>
         <SignMessageButtonText>Já possui uma conta?</SignMessageButtonText>
-        <SignMessageButtonTextBold>Faça login</SignMessageButtonTextBold>
+        <SignMessageButtonTextBold>Faça Login</SignMessageButtonTextBold>
       </SignMessageButton>
     </Container>
   );

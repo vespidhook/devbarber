@@ -1,4 +1,6 @@
 import React, {useEffect, useContext} from 'react';
+import {StatusBar} from 'react-native';
+import NavigationBar from 'react-native-navbar-color';
 import {Container, LoadingIcon} from './styles';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useNavigation} from '@react-navigation/native';
@@ -17,20 +19,26 @@ export default () => {
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem('token');
+
       if (token) {
-        let res = await Api.checkToken(token);
-        if (res.token) {
-          await AsyncStorage.setItem('token', res.token);
+        let json = await Api.checkToken();
+
+        if (json.token) {
+          await AsyncStorage.setItem('token', json.token);
 
           userDispatch({
             type: 'setAvatar',
             payload: {
-              avatar: res.data.avatar,
+              avatar: json.data.avatar,
             },
           });
 
           navigation.reset({
-            routes: [{name: 'MainTab'}],
+            routes: [
+              {
+                name: 'MainTab',
+              },
+            ],
           });
         } else {
           navigation.navigate('SignIn');
@@ -40,12 +48,14 @@ export default () => {
       }
     };
     checkToken();
-  }, []);
+    NavigationBar.setColor('#63c2d1');
+  }, [navigation, userDispatch]);
 
   return (
     <Container>
+      <StatusBar backgroundColor="#63c2d1" barStyle="light-content" />
       <BarberLogo width="100%" height="160" />
-      <LoadingIcon size="large" color="#fff" />
+      <LoadingIcon size="large" color="#FFF" />
     </Container>
   );
 };

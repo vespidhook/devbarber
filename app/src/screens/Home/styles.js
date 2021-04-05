@@ -1,9 +1,10 @@
-import React from 'react';
 import styled from 'styled-components/native';
+import {StatusBar} from 'react-native';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
   background-color: #63c2d1;
+  padding-top: ${StatusBar.currentHeight}px;
 `;
 
 export const Scroller = styled.ScrollView`
@@ -11,20 +12,21 @@ export const Scroller = styled.ScrollView`
   padding: 20px;
 `;
 
-export const HeaderArea = styled.SafeAreaView`
+export const HeaderArea = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 `;
 
 export const HeaderTitle = styled.Text`
-  width: 250px;
+  width: 180px;
   font-size: 24px;
   font-weight: bold;
   color: #fff;
+  line-height: 36px;
 `;
 
-export const SearcButton = styled.TouchableOpacity`
+export const SearchButton = styled.TouchableOpacity`
   width: 26px;
   height: 26px;
 `;
@@ -47,8 +49,8 @@ export const LocationInput = styled.TextInput`
 `;
 
 export const LocationFinder = styled.TouchableOpacity`
-  /* width: 24px;
-  height: 24px; */
+  width: 24px;
+  height: 24px;
 `;
 
 export const LoadingIcon = styled.ActivityIndicator`
@@ -56,6 +58,14 @@ export const LoadingIcon = styled.ActivityIndicator`
 `;
 
 export const ListArea = styled.View`
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 10px;
+  margin-bottom: 50px;
+`;
+
+export const NoBarberAlert = styled.Text`
+  align-self: center;
+  text-align: center;
+  font-size: 20px;
+  margin-top: 20px;
+  color: #fff;
 `;

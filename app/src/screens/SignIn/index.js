@@ -1,4 +1,5 @@
 import React, {useState, useContext} from 'react';
+import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -24,13 +25,14 @@ import LockIcon from '../../assets/lock.svg';
 
 export default () => {
   const {dispatch: userDispatch} = useContext(UserContext);
+
   const navigation = useNavigation();
 
-  const [emailField, setEmailFiled] = useState('');
-  const [passwordField, setPasswordFiled] = useState('');
+  const [emailField, setEmailField] = useState('');
+  const [passwordField, setPasswordField] = useState('');
 
   const handleSignClick = async () => {
-    if (emailField != '' && passwordField != '') {
+    if (emailField && passwordField) {
       let json = await Api.signIn(emailField, passwordField);
 
       if (json.token) {
@@ -44,39 +46,47 @@ export default () => {
         });
 
         navigation.reset({
-          routes: [{name: 'MainTab'}],
+          routes: [
+            {
+              name: 'MainTab',
+            },
+          ],
         });
       } else {
-        alert('E-mail e/ou senha incorretos!');
+        alert(JSON.stringify(json.error));
       }
     } else {
-      alert('Preencha os campos!');
     }
   };
 
   const handleMessageButtonClick = () => {
     navigation.reset({
-      routes: [{name: 'SignUp'}],
+      routes: [
+        {
+          name: 'SignUp',
+        },
+      ],
     });
   };
 
   return (
     <Container>
+      <StatusBar backgroundColor="#63c2d1" barStyle="dark-content" />
+
       <BarberLogo width="100%" height="160" />
 
       <InputArea>
         <SignInput
           IconSvg={EmailIcon}
-          placeholder="Digite seu e-mail"
+          placeholder="E-mail"
           value={emailField}
-          onChangeText={(t) => setEmailFiled(t)}
+          onChangeText={(t) => setEmailField(t)}
         />
-
         <SignInput
           IconSvg={LockIcon}
-          placeholder="Digite sua senha"
+          placeholder="Senha"
           value={passwordField}
-          onChangeText={(t) => setPasswordFiled(t)}
+          onChangeText={(t) => setPasswordField(t)}
           password={true}
         />
 

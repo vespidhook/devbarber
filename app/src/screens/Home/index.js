@@ -11,12 +11,13 @@ import {
   Scroller,
   HeaderArea,
   HeaderTitle,
-  SearcButton,
+  SearchButton,
   LocationArea,
   LocationInput,
   LocationFinder,
   LoadingIcon,
   ListArea,
+  NoBarberAlert,
 } from './styles';
 
 import BarberItem from '../../components/BarberItem';
@@ -28,103 +29,125 @@ export default () => {
   const navigation = useNavigation();
 
   const [locationText, setLocationText] = useState('');
-  const [coords, setCoords] = useState(null);
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
+  const [showList, setShowList] = useState(true);
 
   const handleLocationFinder = async () => {
-    setCoords(null);
-    let result = await request(
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
-        : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-    );
+    setLocationText('');
 
-    if (result == 'granted') {
-      setLoading(true);
-      setLocationText('');
-      setList([]);
+    let permission;
+    let result;
 
+    switch (Platform.OS) {
+      case 'ios':
+        permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
+        break;
+      case 'android':
+        permission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+        break;
+    }
+
+    if (permission) {
+      result = await request(permission);
+    }
+
+    if (result === 'granted') {
       Geolocation.getCurrentPosition((info) => {
-        setCoords(info.coords);
-        getBarbers();
+        getBarbers(info.coords.latitude, info.coords.longitude);
       });
+    } else {
+      getBarbers();
     }
   };
 
-  const getBarbers = async () => {
+  const getBarbers = async (latitude, longitude, location = false) => {
     setLoading(true);
+    setShowList(true);
     setList([]);
 
-    let lat = null;
-    let lng = null;
-    if (coords) {
-      lat = coords.latitude;
-      lng = coords.longitude;
+    let [lat, lng, city, distance, offset] = '';
+
+    if (latitude) {
+      lat = latitude;
     }
 
-    let res = await Api.getBarbers(lat, lng, locationText);
-    if (res.error == '') {
-      if (res.loc) {
-        setLocationText(res.loc);
-      }
+    if (longitude) {
+      lng = longitude;
+    }
+
+    if (location) {
+      city = locationText;
+    }
+
+    let res = await Api.getBarbers(lat, lng, city, distance, offset);
+
+    if (res.error === '') {
       setList(res.data);
+
+      if (Object.keys(res.data).length === 0) {
+        setShowList(false);
+      }
+
+      setLocationText(res.location);
     } else {
-      alert('Error: ' + res.error);
+      alert(JSON.stringify(res.error));
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    getBarbers();
-  }, []);
+    handleLocationFinder();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onRefresh = () => {
-    setRefreshing(false);
-    getBarbers();
+    handleLocationFinder();
   };
 
   const handleLocationSearch = () => {
-    setCoords({});
-    getBarbers();
+    getBarbers('', '', true);
   };
-
   return (
     <Container>
       <Scroller
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={false} onRefresh={onRefresh} />
         }>
         <HeaderArea>
           <HeaderTitle numberOfLines={2}>
             Encontre o seu barbeiro favorito
           </HeaderTitle>
-          <SearcButton onPress={() => navigation.navigate('Search')}>
-            <SearchIcon width="26" heitght="26" fill="#fff" />
-          </SearcButton>
+
+          <SearchButton onPress={() => navigation.navigate('Search')}>
+            <SearchIcon widht="26" height="26" fill="#fff" />
+          </SearchButton>
         </HeaderArea>
 
         <LocationArea>
           <LocationInput
-            placeholder="Onde você esta?"
+            placeholder="Onde você está?"
             placeholderTextColor="#fff"
             value={locationText}
             onChangeText={(t) => setLocationText(t)}
-            onEndEditing={handleLocationSearch}
+            onSubmitEditing={handleLocationSearch}
           />
+
           <LocationFinder onPress={handleLocationFinder}>
-            <MyLocationIcon width="24" heitght="24" fill="#fff" />
+            <MyLocationIcon width="24" height="24" fill="#fff" />
           </LocationFinder>
         </LocationArea>
 
         {loading && <LoadingIcon size="large" color="#fff" />}
 
         <ListArea>
-          {list.map((item, k) => (
-            <BarberItem key={k} data={item} />
-          ))}
+          {showList ? (
+            list.map((item, k) => <BarberItem key={k} data={item} />)
+          ) : (
+            <NoBarberAlert>
+              Ainda não há barbeiros em sua região :/
+            </NoBarberAlert>
+          )}
         </ListArea>
       </Scroller>
     </Container>

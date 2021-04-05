@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
 
-import Stars from '../components/Stars';
+import Stars from './Stars';
 
 const Area = styled.TouchableOpacity`
   background-color: #fff;
-  margin-bottom: 20px;
+  margin-top: 20px;
   border-radius: 20px;
   padding: 15px;
   flex-direction: row;
@@ -47,7 +47,7 @@ export default ({data}) => {
 
   const handleClick = () => {
     navigation.navigate('Barber', {
-      id: data.id,
+      public_id: data.public_id,
       avatar: data.avatar,
       name: data.name,
       stars: data.stars,
@@ -57,6 +57,7 @@ export default ({data}) => {
   return (
     <Area onPress={handleClick}>
       <Avatar source={{uri: data.avatar}} />
+
       <InfoArea>
         <UserName>{data.name}</UserName>
 

@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from 'styled-components/native';
+import {StatusBar} from 'react-native';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
@@ -13,7 +13,7 @@ export const Scroller = styled.ScrollView`
 export const SwipeDot = styled.View`
   width: 10px;
   height: 10px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 5px;
   margin: 3px;
 `;
@@ -21,7 +21,7 @@ export const SwipeDot = styled.View`
 export const SwipeDotActive = styled.View`
   width: 10px;
   height: 10px;
-  background-color: #000000;
+  background-color: #000;
   border-radius: 5px;
   margin: 3px;
 `;
@@ -33,11 +33,11 @@ export const SwipeItem = styled.View`
 
 export const SwipeImage = styled.Image`
   width: 100%;
-  height: 240px;
+  height: 300px;
 `;
 
 export const FakeSwiper = styled.View`
-  height: 140px;
+  height: 200px;
   background-color: #63c2d1;
 `;
 
@@ -50,7 +50,7 @@ export const PageBody = styled.View`
 
 export const UserInfoArea = styled.View`
   flex-direction: row;
-  margin-top: -30px;
+  margin-top: -40px;
 `;
 
 export const UserAvatar = styled.Image`
@@ -88,14 +88,24 @@ export const UserFavButton = styled.TouchableOpacity`
   margin-right: 20px;
 `;
 
+export const BackButton = styled.TouchableOpacity`
+  position: absolute;
+  left: 15px;
+  top: ${StatusBar.currentHeight + 5}px;
+`;
+
+export const LoadingIcon = styled.ActivityIndicator`
+  margin-top: 100px;
+`;
+
 export const ServiceArea = styled.View`
-  margin-top: 30px;
+  margin-top: 20px;
 `;
 
 export const ServicesTitle = styled.Text`
   font-size: 18px;
   font-weight: bold;
-  color: #268596;
+  color: #268696;
   margin-left: 30px;
   margin-bottom: 20px;
 `;
@@ -114,12 +124,12 @@ export const ServiceInfo = styled.View`
 export const ServiceName = styled.Text`
   font-size: 16px;
   font-weight: bold;
-  color: #268596;
+  color: #268696;
 `;
 
 export const ServicePrice = styled.Text`
   font-size: 14px;
-  color: #268596;
+  color: #268696;
 `;
 
 export const ServiceChooseButton = styled.TouchableOpacity`
@@ -128,7 +138,7 @@ export const ServiceChooseButton = styled.TouchableOpacity`
   padding: 10px 15px;
 `;
 
-export const ServiceChooseBtnText = styled.Text`
+export const ServiceChooseButtonText = styled.Text`
   font-size: 14px;
   font-weight: bold;
   color: #fff;
@@ -156,23 +166,12 @@ export const TestimonialInfo = styled.View`
 `;
 
 export const TestimonialName = styled.Text`
-  color: #fff;
   font-size: 14px;
+  color: #fff;
   font-weight: bold;
 `;
 
 export const TestimonialBody = styled.Text`
-  color: #fff;
   font-size: 13px;
-`;
-
-export const BackButton = styled.TouchableOpacity`
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 9;
-`;
-
-export const LoadingIcon = styled.ActivityIndicator`
-  margin-top: 50px;
+  color: #fff;
 `;
